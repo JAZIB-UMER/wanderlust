@@ -3,10 +3,16 @@ services:
   mongodb:
     container_name: mongo
     image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_BIND_IP_ALL: "true"
     volumes:
-      - ./backend/data:/data
+      - ./backend/data:/data/db
     ports:
       - "27017:27017"
+    networks:
+      - wanderlust-network
 
   backend:
     container_name: backend
@@ -17,6 +23,8 @@ services:
       - "5000:5000"
     depends_on:
       - mongodb
+    networks:
+      - wanderlust-network
 
   frontend:
     container_name: frontend
@@ -25,15 +33,39 @@ services:
       - ./frontend/.env.docker
     ports:
       - "5173:5173"
+    networks:
+      - wanderlust-network
 
-  redis:
-    container_name: redis
-    restart: unless-stopped
-    image: redis:7.0.5-alpine 
-    expose:
-        - 6379
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
     depends_on:
       - mongodb
+    environment:
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_DATABASE: wanderlust
+    ports:
+      - "8081:8081"
+    networks:
+      - wanderlust-network
 
+  # redis:
+  #   container_name: redis
+  #   restart: unless-stopped
+  #   image: redis:7.0.5-alpine
+  #   expose:
+  #       - 6379
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - wanderlust-network
+
+networks:
+  wanderlust-network:
+    driver: bridge
 volumes:
   data:
