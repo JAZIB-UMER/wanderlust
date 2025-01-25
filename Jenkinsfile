@@ -4,6 +4,11 @@ pipeline{
         SONAR_HOME= tool "Sonar"
     }
     stages{
+        stage("Cleanup Workspace") {
+            steps {
+                cleanWs()
+            }
+        }
         stage("Clone Code from GitHub"){
             steps{
                 git url: "https://github.com/krishnaacharyaa/wanderlust.git", branch: "devops"
