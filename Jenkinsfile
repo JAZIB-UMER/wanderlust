@@ -11,7 +11,7 @@ pipeline{
         }
         stage("Clone Code from GitHub"){
             steps{
-                git url: "https://github.com/krishnaacharyaa/wanderlust.git", branch: "devops"
+                git url: "https://github.com/JAZIB-UMER/wanderlust.git", branch: "devops"
             }
         }
         stage("SonarQube Quality Analysis"){
